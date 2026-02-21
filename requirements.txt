@@ -1,0 +1,15 @@
+fastapi==0.117.0
+uvicorn[standard]==0.35.0
+SQLAlchemy==2.0.41
+asyncpg==0.29.0
+alembic==1.13.2
+pydantic==2.10.6
+pydantic-settings==2.6.1
+redis==5.2.1
+crawl4ai==0.8.0
+openai==1.64.0
+pgvector==0.2.5
+psycopg[binary]==3.2.9
+pytest==8.4.0
+httpx==0.28.1
+python-dotenv==1.0.1
