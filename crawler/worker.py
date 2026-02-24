@@ -104,13 +104,6 @@ def _note_entries(payload: dict, note_type: NoteType) -> list[PerfumeNote]:
     ]
 
 
-def _extract_list(payload: dict, key: str) -> list[str]:
-    raw = payload.get(key, [])
-    if not isinstance(raw, list):
-        return []
-    return [str(item).strip() for item in raw if str(item).strip()]
-
-
 async def recently_crawled(db, url: str) -> bool:
     stmt = select(Perfume).where(Perfume.fragrantica_url == url)
     perfume = (await db.execute(stmt)).scalar_one_or_none()
@@ -276,7 +269,7 @@ async def crawl_brand(brand: str, crawler, session, max_pages: int | None = None
 
         crawl_log.status = "completed"
         crawl_log.finished_at = datetime.now(timezone.utc)
-    except Exception as exc:
+    except Exception:
         crawl_log.status = "failed"
         crawl_log.finished_at = datetime.now(timezone.utc)
         await session.flush()
