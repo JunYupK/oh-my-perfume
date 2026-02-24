@@ -191,7 +191,7 @@ async def embed_and_store(session, perfume: Perfume, payload: dict):
     session.add(PerfumeEmbedding(perfume_id=perfume.id, embedding=vector))
 
 
-async def process_result(result, session, db):
+async def process_result(result, session):
     if "/perfume/" not in result.url:
         return
 
@@ -208,7 +208,7 @@ async def process_result(result, session, db):
         return
 
     payload = _normalize_payload(payload)
-    if await recently_crawled(db, result.url):
+    if await recently_crawled(session, result.url):
         return
 
     payload["source_url"] = result.url
@@ -269,10 +269,10 @@ async def crawl_brand(brand: str, crawler, session, max_pages: int | None = None
         results = await crawler.arun(url=url, config=run_config)
         if hasattr(results, "__aiter__"):
             async for result in results:
-                await process_result(result, session, session)
+                await process_result(result, session)
         else:
             for result in results:
-                await process_result(result, session, session)
+                await process_result(result, session)
 
         crawl_log.status = "completed"
         crawl_log.finished_at = datetime.now(timezone.utc)
