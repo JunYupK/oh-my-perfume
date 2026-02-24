@@ -16,6 +16,10 @@ async def search_perfumes(query: str, limit: int, db):
     if limit > 50:
         limit = 50
 
+    # asyncpg는 Python list를 pgvector 타입으로 자동 변환하지 않으므로
+    # 벡터를 문자열로 변환하고 SQL에서 명시적으로 CAST하여 처리
+    query_vec_str = "[" + ",".join(map(str, query_vec)) + "]"
+
     stmt = text(
         """
         SELECT
@@ -26,16 +30,16 @@ async def search_perfumes(query: str, limit: int, db):
             p.year,
             p.concentration,
             p.gender,
-            1 - (e.embedding <=> :query_vec) AS similarity
+            1 - (e.embedding <=> CAST(:query_vec AS vector)) AS similarity
         FROM perfumes p
         JOIN brands b ON b.id = p.brand_id
         JOIN perfume_embeddings e ON e.perfume_id = p.id
-        ORDER BY e.embedding <=> :query_vec
+        ORDER BY e.embedding <=> CAST(:query_vec AS vector)
         LIMIT :limit
         """
     )
 
-    rows = (await db.execute(stmt, {"query_vec": query_vec, "limit": limit})).mappings().all()
+    rows = (await db.execute(stmt, {"query_vec": query_vec_str, "limit": limit})).mappings().all()
 
     return [
         {
