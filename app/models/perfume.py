@@ -4,7 +4,7 @@ import enum
 from datetime import datetime
 
 from pgvector.sqlalchemy import Vector
-from sqlalchemy import DateTime, ForeignKey, Integer, String, UniqueConstraint
+from sqlalchemy import DateTime, ForeignKey, Integer, String, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, TimestampMixin
@@ -71,6 +71,7 @@ class PerfumeEmbedding(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     perfume_id: Mapped[int] = mapped_column(ForeignKey("perfumes.id", ondelete="CASCADE"), nullable=False)
     embedding: Mapped[Vector] = mapped_column(Vector(1536), nullable=False)
+    created_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     perfume: Mapped["Perfume"] = relationship(back_populates="embeddings")
 

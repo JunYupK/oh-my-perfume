@@ -2,36 +2,35 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class BrandSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     name: str
     slug: str
     fragrantica_url: str
 
-    class Config:
-        from_attributes = True
-
 
 class NoteSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     note_name: str
     note_type: str
 
-    class Config:
-        from_attributes = True
-
 
 class AccordSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     accord_name: str
     strength: float
 
-    class Config:
-        from_attributes = True
-
 
 class PerfumeListSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     name: str
     slug: str
@@ -40,9 +39,6 @@ class PerfumeListSchema(BaseModel):
     gender: str
     fragrantica_url: str
     last_crawled_at: datetime | None
-
-    class Config:
-        from_attributes = True
 
 
 class PerfumeDetailSchema(PerfumeListSchema):

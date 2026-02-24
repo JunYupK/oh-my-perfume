@@ -13,7 +13,11 @@ def _build_perfume_text(payload: dict) -> str:
     year = payload.get("year")
     concentration = payload.get("concentration", "")
     gender = payload.get("gender", "")
-    accords = ", ".join(payload.get("accords", []))
+    raw_accords = payload.get("accords", [])
+    accords = ", ".join(
+        a["name"] if isinstance(a, dict) else str(a)
+        for a in raw_accords
+    )
     top_notes = ", ".join(payload.get("top_notes", []))
     middle_notes = ", ".join(payload.get("middle_notes", []))
     base_notes = ", ".join(payload.get("base_notes", []))

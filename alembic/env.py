@@ -11,6 +11,8 @@ if ROOT_DIR not in sys.path:
 
 from app.core.config import settings
 from app.models.base import Base
+import app.models.brand  # noqa: F401 — Base.metadata에 테이블 등록
+import app.models.perfume  # noqa: F401 — Base.metadata에 테이블 등록
 
 config = context.config
 
