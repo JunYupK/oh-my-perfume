@@ -61,12 +61,31 @@ def _normalize_text_value(value: object, mapping: dict[str, str], fallback: str 
     return value.strip()
 
 
+def _extract_accords(payload: dict) -> list[dict]:
+    raw = payload.get("accords", [])
+    if not isinstance(raw, list):
+        return []
+    result = []
+    for item in raw:
+        if isinstance(item, dict):
+            name = str(item.get("name", "")).strip()
+            try:
+                strength = float(item.get("strength", 1.0))
+            except (TypeError, ValueError):
+                strength = 1.0
+            if name:
+                result.append({"name": name, "strength": max(0.0, min(1.0, strength))})
+        elif isinstance(item, str) and item.strip():
+            result.append({"name": item.strip(), "strength": 1.0})
+    return result
+
+
 def _normalize_payload(payload: dict) -> dict:
     payload["concentration"] = _normalize_text_value(
         payload.get("concentration"), ALLOWED_CONCENTRATIONS, UNSET_TEXT
     )
     payload["gender"] = _normalize_text_value(payload.get("gender"), ALLOWED_GENDERS, UNSET_TEXT)
-    payload["accords"] = _extract_list(payload, "accords")
+    payload["accords"] = _extract_accords(payload)
     return payload
 
 
@@ -158,9 +177,9 @@ async def upsert_notes_and_accords(session, perfume: Perfume, payload: dict):
         entry.perfume = perfume
         session.add(entry)
 
-    for accord_name in _extract_list(payload, "accords"):
+    for accord in payload.get("accords", []):
         session.add(
-            PerfumeAccord(perfume_id=perfume.id, accord_name=accord_name, strength=1.0)
+            PerfumeAccord(perfume_id=perfume.id, accord_name=accord["name"], strength=accord["strength"])
         )
 
 

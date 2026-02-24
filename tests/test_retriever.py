@@ -8,7 +8,7 @@ def test_build_text_includes_sections():
         "year": 2024,
         "concentration": "EDP",
         "gender": "Unisex",
-        "accords": ["Floral"],
+        "accords": [{"name": "Floral", "strength": 0.8}],
         "top_notes": ["Rose"],
         "middle_notes": ["Jasmine"],
         "base_notes": ["Amber"],
